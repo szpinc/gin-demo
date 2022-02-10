@@ -1,8 +1,12 @@
 package users
 
 import (
+	"crypto/sha256"
+	"fmt"
 	"gin-demo/app/models"
+	"gin-demo/app/models/request"
 	"gin-demo/global"
+
 	"gorm.io/gorm"
 )
 
@@ -21,4 +25,16 @@ func GetUserInfo(userId uint) *models.User {
 		}
 	}
 	return &result
+}
+
+func Register(userRegister request.UserRegister) *models.User {
+
+	// 密码md5加密
+	passwordEncoded := fmt.Sprintf("%v", sha256.Sum256([]byte(userRegister.Password)))
+
+	u := models.User{
+		Name:     userRegister.UserName,
+		Password: passwordEncoded,
+		Nickname: userRegister.Nickname,
+	}
 }

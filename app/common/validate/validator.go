@@ -1,4 +1,4 @@
-package request
+package validate
 
 import "github.com/go-playground/validator/v10"
 
@@ -14,11 +14,14 @@ func GetErrorMsg(request interface{}, err error) string {
 		_, isValidator := request.(Validator)
 
 		for _, e := range validErrors {
-
+			if !isValidator {
+				return e.Error()
+			}
 			// 若request结构体实现了Validator接口即可实现自定义错误信息
-			if isValidator {
-
+			if message, ok := request.(Validator).GetMessage()[e.Field()+"."+e.Tag()]; ok {
+				return message
 			}
 		}
 	}
+	return "Parameter error"
 }
